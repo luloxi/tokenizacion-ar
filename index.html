@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Guía completa de tokenización de activos en Argentina: marco legal CNV, Cardano y Midnight." />
+  <title>Tokenización de Activos en Argentina — Cardano &amp; Midnight</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #080b12;
+      --bg2: #0d1117;
+      --surface: #141b27;
+      --surface2: #1a2332;
+      --border: #1e2d42;
+      --border2: #2a3f5c;
+      --accent: #3b82f6;
+      --accent2: #60a5fa;
+      --accent-cardano: #0033ad;
+      --accent-midnight: #7c3aed;
+      --gold: #f59e0b;
+      --green: #10b981;
+      --text: #f1f5f9;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --font: 'Outfit', system-ui, sans-serif;
+      --font2: 'Space Grotesk', system-ui, sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.7; font-size: 16px; }
+    a { color: var(--accent2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    code { background: var(--surface2); color: var(--accent2); padding: 2px 6px; border-radius: 4px; font-family: 'Space Grotesk', monospace; font-size: 0.88em; }
+    pre { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 20px; overflow-x: auto; font-family: 'Space Grotesk', monospace; font-size: 0.85em; line-height: 1.6; color: var(--text2); }
+    pre code { background: none; padding: 0; color: inherit; }
+    h1, h2, h3, h4 { font-family: var(--font2); line-height: 1.2; }
+    h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; }
+    h2 { font-size: clamp(1.5rem, 3vw, 2.2rem); font-weight: 700; margin-bottom: 0.8em; }
+    h3 { font-size: 1.25rem; font-weight: 600; margin-bottom: 0.6em; }
+    h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.4em; color: var(--accent2); }
+    p { margin-bottom: 1em; color: var(--text2); }
+    .container { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+    .container-wide { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(8,11,18,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 0 24px; }
+    nav .inner { max-width: 1100px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 16px; }
+    nav .logo { font-family: var(--font2); font-weight: 700; font-size: 1rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
+    nav .logo span { color: var(--accent); }
+    nav ul { display: flex; list-style: none; gap: 4px; flex-wrap: wrap; }
+    nav ul a { color: var(--text3); font-size: 0.875rem; font-weight: 500; padding: 6px 12px; border-radius: 6px; transition: all 0.15s; }
+    nav ul a:hover { color: var(--text); background: var(--surface); text-decoration: none; }
+    @media (max-width: 640px) { nav ul { display: none; } }
+
+    /* HERO */
+    .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 100px 24px 80px; position: relative; overflow: hidden; }
+    .hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 60%), radial-gradient(ellipse 60% 40% at 80% 80%, rgba(124,58,237,0.08) 0%, transparent 50%); pointer-events: none; }
+    .hero .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--surface2); border: 1px solid var(--border2); color: var(--accent2); font-size: 0.8rem; font-weight: 600; padding: 6px 14px; border-radius: 100px; margin-bottom: 28px; letter-spacing: 0.05em; text-transform: uppercase; }
+    .hero h1 { margin-bottom: 20px; letter-spacing: -0.02em; }
+    .hero h1 .gradient { background: linear-gradient(135deg, var(--accent2) 0%, #a78bfa 50%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .hero .subtitle { font-size: clamp(1rem, 2vw, 1.2rem); color: var(--text2); max-width: 600px; margin-bottom: 40px; font-weight: 400; }
+    .hero .cta-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border-radius: 8px; font-weight: 600; font-size: 0.95rem; font-family: var(--font); cursor: pointer; transition: all 0.15s; border: none; text-decoration: none; }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-primary:hover { background: var(--accent2); text-decoration: none; transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: var(--text2); border: 1px solid var(--border2); }
+    .btn-outline:hover { border-color: var(--accent2); color: var(--accent2); text-decoration: none; transform: translateY(-1px); }
+
+    /* SECTIONS */
+    section { padding: 80px 0; }
+    section + section { border-top: 1px solid var(--border); }
+
+    .section-label { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-label::before { content: ''; width: 20px; height: 2px; background: var(--accent); border-radius: 2px; }
+
+    /* CARDS */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; transition: border-color 0.2s; }
+    .card:hover { border-color: var(--border2); }
+    .card h3 { margin-top: 0; }
+    .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 32px; }
+
+    /* BADGE PILLS */
+    .pill { display: inline-flex; align-items: center; gap: 4px; font-size: 0.75rem; font-weight: 600; padding: 3px 10px; border-radius: 100px; background: var(--surface2); border: 1px solid var(--border); color: var(--text2); }
+    .pill.blue { background: rgba(59,130,246,0.12); border-color: rgba(59,130,246,0.3); color: var(--accent2); }
+    .pill.purple { background: rgba(124,58,237,0.12); border-color: rgba(124,58,237,0.3); color: #a78bfa; }
+    .pill.green { background: rgba(16,185,129,0.12); border-color: rgba(16,185,129,0.3); color: var(--green); }
+    .pill.gold { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.3); color: var(--gold); }
+
+    /* TABLES */
+    .table-wrap { overflow-x: auto; margin: 24px 0; border-radius: 10px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead { background: var(--surface2); }
+    th { text-align: left; padding: 12px 16px; font-weight: 600; font-size: 0.8rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); white-space: nowrap; }
+    td { padding: 12px 16px; color: var(--text2); border-bottom: 1px solid var(--border); }
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    /* CALLOUT */
+    .callout { background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; padding: 16px 20px; margin: 24px 0; font-size: 0.95rem; }
+    .callout p { margin-bottom: 0; }
+    .callout.cardano { border-left-color: var(--accent-cardano); }
+    .callout.midnight { border-left-color: var(--accent-midnight); }
+
+    /* STACK */
+    .stack { display: flex; flex-direction: column; gap: 12px; }
+    .stack-item { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; display: flex; gap: 14px; align-items: flex-start; }
+    .stack-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; background: var(--surface2); }
+
+    /* CODE */
+    .code-block { margin: 20px 0; }
+    .code-block .label { font-size: 0.75rem; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 8px; }
+
+    /* DIVIDER */
+    .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+    /* GRID */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+    /* TOC */
+    .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin: 32px 0; }
+    .toc h3 { margin-bottom: 16px; font-size: 1rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.08em; font-size: 0.8rem; }
+    .toc ol { padding-left: 20px; }
+    .toc li { margin-bottom: 8px; }
+    .toc a { color: var(--text2); font-size: 0.95rem; }
+    .toc a:hover { color: var(--accent2); }
+    .toc ol ol { margin-top: 6px; }
+
+    /* TIMELINE */
+    .timeline { position: relative; padding-left: 28px; }
+    .timeline::before { content: ''; position: absolute; left: 7px; top: 8px; bottom: 8px; width: 2px; background: var(--border2); border-radius: 2px; }
+    .timeline-item { position: relative; margin-bottom: 28px; }
+    .timeline-item::before { content: ''; position: absolute; left: -24px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); }
+    .timeline-item h4 { margin-bottom: 4px; }
+    .timeline-item p { margin: 0; font-size: 0.9rem; }
+
+    /* FOOTER */
+    footer { border-top: 1px solid var(--border); padding: 40px 0; text-align: center; color: var(--text3); font-size: 0.875rem; }
+    footer a { color: var(--text3); }
+    footer a:hover { color: var(--accent2); }
+
+    @media (max-width: 640px) {
+      section { padding: 60px 0; }
+      .hero { min-height: 90vh; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <div class="logo">&#9001; <span>Token</span>AR &#9002;</div>
+    <ul>
+      <li><a href="#legal">Marco Legal</a></li>
+      <li><a href="#cardano">Cardano</a></li>
+      <li><a href="#midnight">Midnight</a></li>
+      <li><a href="#comparativa">Comparativa</a></li>
+      <li><a href="#herramientas">Herramientas</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+    </ul>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="badge">Investigaci&#243;n 2026</div>
+  <h1>Tokenizaci&#243;n de Activos<br/><span class="gradient">en Argentina</span></h1>
+  <p class="subtitle">Gu&#237;a completa: marco regulatorio argentino (CNV), est&#225;ndares y herramientas para tokenizar activos en <strong>Cardano</strong> y <strong>Midnight</strong>.</p>
+  <div class="cta-row">
+    <a href="#legal" class="btn btn-primary">Ver Marco Legal &#8594;</a>
+    <a href="#cardano" class="btn btn-outline">Cardano</a>
+    <a href="#midnight" class="btn btn-outline">Midnight</a>
+  </div>
+</div>
+
+<!-- TOC -->
+<div class="container">
+  <div class="toc">
+    <h3>Tabla de Contenidos</h3>
+    <ol>
+      <li><a href="#legal">Marco Legal Argentino</a>
+        <ol>
+          <li><a href="#legal-rg1069">RG 1069/2025 &#8212; R&#233;gimen de Tokenizaci&#243;n</a></li>
+          <li><a href="#legal-rg1081">RG 1081/2025 &#8212; Ampliaci&#243;n y Pr&#243;rroga</a></li>
+          <li><a href="#legal-valores">Valores Negociables Admitidos</a></li>
+          <li><a href="#legal-mecanismo">Mecanismo de Funcionamiento</a></li>
+          <li><a href="#legal-psav">PSAV &#8212; Proveedores de Servicios</a></li>
+          <li><a href="#legal-proteccion">Protecci&#243;n del Inversor</a></li>
+          <li><a href="#legal-sandbox">Entorno Sandbox</a></li>
+        </ol>
+      </li>
+      <li><a href="#cardano">Tokenizaci&#243;n en Cardano</a>
+        <ol>
+          <li><a href="#cardano-cierres">Estandares Existentes (CIP-25, CIP-68, CIP-0113)</a></li>
+          <li><a href="#cardano-herramientas">Herramientas de Desarrollo</a></li>
+          <li><a href="#cardano-scaffolds">Scaffolds y Plantillas</a></li>
+          <li><a href="#cardano-programmable">Programmable Tokens Platform (CIP-0113)</a></li>
+        </ol>
+      </li>
+      <li><a href="#midnight">Tokenizaci&#243;n en Midnight</a>
+        <ol>
+          <li><a href="#midnight-cierres">Modelo Dual: NIGHT y DUST</a></li>
+          <li><a href="#midnight-stack">Stack de Desarrollo (Compact + midnight.js)</a></li>
+          <li><a href="#midnight-scaffolds">Scaffolds y CLI</a></li>
+        </ol>
+      </li>
+      <li><a href="#comparativa">Comparativa: Cardano vs Midnight</a></li>
+      <li><a href="#herramientas">Herramientas y Recursos</a></li>
+      <li><a href="#roadmap">Roadmap para un Proyecto de Tokenizaci&#243;n</a></li>
+    </ol>
+  </div>
+</div>
+
+<!-- MARCO LEGAL -->
+<section id="legal">
+  <div class="container">
+    <div class="section-label">Secci&#243;n 01</div>
+    <h2>Marco Legal Argentino</h2>
+    <p>Argentina dispose desde 2025 de un marco regulatorio espec&#237;fico para la tokenizaci&#243;n de valores negociables, impulsado por la <strong>Comisi&#243;n Nacional de Valores (CNV)</strong>. El r&#233;gimen permite representar digitalmente activos financieros en blockchain manteniendo el dep&#243;sito en el sistema tradicional (ADCVN).</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <span class="pill blue">&#128197; Abril 2025</span>
+        <h3 style="margin-top:12px">RG 1060/2025</h3>
+        <p>Primer r&#233;gimen de tokenizaci&#243;n de valores negociables en Argentina. Define el marco general, ADCVN y PSAVs.</p>
+      </div>
+      <div class="card">
+        <span class="pill gold">&#128197; Junio 2025</span>
+        <h3 style="margin-top:12px">RG 1069/2025</h3>
+        <p>Marco regulatorio detallado para tokenizaci&#243;n de VN. Establece valores admisibles, proceso de autorizaci&#243;n simult&#225;nea y obligaciones de PSAVs.</p>
+      </div>
+      <div class="card">
+        <span class="pill green">&#128197; Agosto 2025</span>
+        <h3 style="margin-top:12px">RG 1081/2025</h3>
+        <p>Ampliaci&#243;n del r&#233;gimen: extiende a reg&#237;menes de autorizaci&#243;n autom&#225;tica (PyMEs, ONs aut&#243;nomas, EMISOR frecuente) y prorroga el sandbox hasta agosto 2026.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="legal-rg1069">&#128220; RG 1069/2025 &#8212; R&#233;gimen de Tokenizaci&#243;n de Valores Negociables</h3>
+
+    <div class="callout">
+      <p><strong>Fuente:</strong> <a href="https://www.boletinoficial.gob.ar/detalleAviso/primera/326947/20250613" target="_blank" rel="noopener">Bolet&#237;n Oficial &#8212; RG 1069/2025</a> &middot; Vigente desde el 14 de junio de 2025</p>
+    </div>
+
+    <p>La RG 1069/2025 establece un marco regulatorio moderno para la representaci&#243;n digital de valores negociables mediante tecnolog&#237;as de registro distribuido (TRD), promoviendo la innovaci&#243;n en el mercado de capitales argentino.</p>
+
+    <h3 id="legal-valores">&#10004; Valores Admisibles para Tokenizaci&#243;n</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Admisibles</th><th>No Admisibles</th></tr></thead>
+        <tbody>
+          <tr><td>Valores representativos de deuda</td><td style="color:#ef4444">Valores Negociables Sociales, Verdes, Sustentables (SVS)</td></tr>
+          <tr><td>Certificados de participaci&#243;n de fideicomisos financieros con oferta p&#250;blica</td><td style="color:#ef4444">Valores Vinculados a la Sostenibilidad (VS)</td></tr>
+          <tr><td>Activos del mundo real (RWAs)</td><td style="color:#ef4444">Valores emitidos bajo reg&#237;menes de oferta p&#250;blica con autorizaci&#243;n autom&#225;tica</td></tr>
+          <tr><td>Acciones (incluidas doble listado)</td><td></td></tr>
+          <tr><td>Obligaciones negociables</td><td></td></tr>
+          <tr><td>Cuotapartes de FCI cerrados (Ley 24.083)</td><td></td></tr>
+          <tr><td>CEDEARs</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="legal-mecanismo">&#9881; Mecanismo de Funcionamiento</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>1. Dep&#243;sito en ADCVN</h4>
+        <p>Los valores deben estar emitidos cartular o escrituralmente y depositados ante un <strong>Agente Depositario Central de Valores Negociables</strong> (ADCVN).</p>
+      </div>
+      <div class="timeline-item">
+        <h4>2. Solicitud Simult&#225;nea a la CNV</h4>
+        <p>El emisor debe solicitar <em>simult&#225;neamente</em> la autorizaci&#243;n de oferta p&#250;blica y la autorizaci&#243;n de representaci&#243;n digital.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>3. Representaci&#243;n Digital</h4>
+        <p>La tokenizaci&#243;n es una representaci&#243;n adicional &#8212; <strong>no crea un nuevo valor</strong>, sino una forma digital del valor preexistente depositado.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>4. Negociaci&#243;n en Plataformas de PSAVs</h4>
+        <p>Las representaciones digitales se negocian en plataformas y apps m&#243;viles de <strong>PSAVs registrados</strong> ante la CNV.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>5. Reemplazo a Pedido del Tenedor</h4>
+        <p>El inversor puede solicitar en cualquier momento el reemplazo de la representaci&#243;n digital por el formato tradicional.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="legal-psav">&#128176; PSAVs &#8212; Proveedores de Servicios de Activos Virtuales</h3>
+    <p>Los PSAVs son responsables de la comercializaci&#243;n, administraci&#243;n, custodia y gesti&#243;n del entorno digital de los valores tokenizados.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <h4>Obligaciones Clave</h4>
+        <ul style="padding-left:18px; color:var(--text2); font-size:0.9rem;">
+          <li>Segregaci&#243;n patrimonial entre activos de clientes y patrimonio propio</li>
+          <li>Identificaci&#243;n clara de inversores mediante est&#225;ndares tecnol&#243;gicos</li>
+          <li>Procedimientos auditados</li>
+          <li>Reporte de irregularidades a la CNV</li>
+          <li>Canales para reclamos y resoluci&#243;n de conflictos</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>Protecci&#243;n del Inversor</h4>
+        <ul style="padding-left:18px; color:var(--text2); font-size:0.9rem;">
+          <li>Documentos de emisi&#243;n claros e informativos sobre riesgos</li>
+          <li>Publicaci&#243;n de hechos relevantes</li>
+          <li>Acceso a informaci&#243;n para monitorear valores y operaciones</li>
+          <li>Cumplimiento normativo contra lavado de activos</li>
+        </ul>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="legal-sandbox">&#129514; Entorno Sandbox Regulatorio</h3>
+    <div class="callout">
+      <p>El sandbox tiene una vigencia de <strong>1 a&#241;o</strong> (hasta el <strong>21 de agosto de 2026</strong> inclusive, seg&#250;n RG 1081/2025). Una vez alcanzado ese plazo, las emisiones existentes conservan validez pero <strong>no se permiten nuevas emisiones</strong>.</p>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Aspecto</th><th>Detalle</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Plazo</strong></td><td>1 a&#241;o &#8212; hasta agosto 2026</td></tr>
+          <tr><td><strong>Emisiones existentes</strong></td><td>Conservan validez</td></tr>
+          <tr><td><strong>Nuevas emisiones post-plazo</strong></td><td>No permitidas</td></tr>
+          <tr><td><strong>Adhesi&#243;n</strong></td><td>Emisiones no digitalizadas dentro de los 2 a&#241;os pierden adhesi&#243;n al r&#233;gimen</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout">
+      <p><strong>Fuentes oficiales:</strong> <a href="https://www.argentina.gob.ar/noticias/nuevo-regimen-de-tokenizacion" target="_blank" rel="noopener">Argentina.gob.ar</a> &middot; <a href="https://www.ey.com/es_ar/technical/law/ey-law-alerts-argentina/rg-cnv-1069-2025-tokenizacion-valores-negociables" target="_blank" rel="noopener">EY Argentina</a> &middot; <a href="https://www.marval.com/Publicacion/se-amplia-el-regimen-de-tokenizacion-de-valores-negociables-17296" target="_blank" rel="noopener">Marval</a></p>
+    </div>
+
+  </div>
+</section>
+
+<!-- CARDANO -->
+<section id="cardano">
+  <div class="container">
+    <div class="section-label">Secci&#243;n 02</div>
+    <h2>Tokenizaci&#243;n en Cardano</h2>
+    <p>Cardano soporta nativamente tokens multi-activo sin necesidad de smart contracts dedicados. La plataforma evolucion&#243; hacia los <strong>Programmable Tokens</strong> con CIP-0113, permitiendo l&#243;gica de cumplimiento on-chain para activos tokenizados.</p>
+
+    <div class="card-grid">
+      <div class="card">
+        <span class="pill blue">CIP-25</span>
+        <h3 style="margin-top:12px">Metadata NFT Est&#225;ndar</h3>
+        <p>Est&#225;ndar m&#225;s usado para NFTs en Cardano. Define formato de metadata JSON para tokens. Ampliamente soportado por wallets, explorers y marketplaces.</p>
+      </div>
+      <div class="card">
+        <span class="pill blue">CIP-68</span>
+        <h3 style="margin-top:12px">Datum Metadata Est&#225;ndar</h3>
+        <p>Usa output datums para metadata, permitiendo que smart contracts lean y actualicen metadata. Aplicable a NFTs y cualquier clase de activo.</p>
+      </div>
+      <div class="card">
+        <span class="pill gold">CIP-0113</span>
+        <h3 style="margin-top:12px">Programmable Tokens</h3>
+        <p>Plataforma open-source para tokens programables con l&#243;gica de cumplimiento on-chain. Construido con Aiken. Soporta equities, commodities y stablecoins.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="cardano-cierres">&#128203; Estandares de Tokenizaci&#243;n en Cardano</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Estandar</th><th>Tipo</th><th>Casos de Uso</th><th>Herramienta</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CIP-25</strong></td><td>NFT Metadata</td><td>NFTs, arte digital, coleccionables</td><td>Emperor, JPG Store</td></tr>
+          <tr><td><strong>CIP-68</strong></td><td>Datum Metadata</td><td>NFTs avanzados, activos con metadata din&#225;mica</td><td>Aiken, Mesh</td></tr>
+          <tr><td><strong>CIP-0113</strong></td><td>Programmable Tokens</td><td>RWAs, securities, stablecoins, equities</td><td>Aiken (on-chain), SDKs (off-chain)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="cardano-programmable">&#128640; Programmable Tokens Platform (CIP-0113)</h3>
+    <p>Lanzada por la Cardano Foundation en marzo 2026, la <strong>Programmable Tokens Platform</strong> es el est&#225;ndar de facto para tokenizaci&#243;n de activos del mundo real (RWAs) en Cardano. Construida con <strong>Aiken</strong>, permite a los emisores definir reglas personalizables que se ejecutan autom&#225;ticamente en la ledger de Cardano.</p>
+
+    <div class="callout">
+      <p>"Esto ser&#225; la clave para desbloquear la tokenizaci&#243;n y el crecimiento further de stablecoins en Cardano." &#8212; Cardano Foundation</p>
+    </div>
+
+    <div class="stack">
+      <div class="stack-item">
+        <div class="stack-icon">&#128737;</div>
+        <div>
+          <h4>Substandards Modulares</h4>
+          <p>CIP-0113 usa arquitectura de dos capas: el core define el est&#225;ndar de despliegue y gesti&#243;n; los <em>substandards</em> especifican reglas de mint/burn/transfer. Cualquiera puede desarrollar y compartir substandards como templates.</p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">&#9878;</div>
+        <div>
+          <h4>Cumplimiento On-Chain</h4>
+          <p>Las reglas como restricciones de transferencia, freeze de activos o verificaci&#243;n de KYC se ejecutan autom&#225;ticamente via smart contracts Aiken, sin necesidad de intermediarios.</p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon">&#128279;</div>
+        <div>
+          <h4>Compatibilidad Nativa</h4>
+          <p>Los programmable tokens permanecen como native Cardano assets &#8212; trackeables por explorers y wallets existentes. No requieren cambios al protocolo.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="margin-top:24px;">
+      <div class="label">Recursos &#8212; CIP-0113</div>
+      <pre><code>GitHub:   github.com/cardano-foundation/cip113-programmable-tokens
+Preview:   preview.programmabletokens.xyz
+CIP PR:    github.com/cardano-foundation/CIPs/pull/444
+Discord:   discord.gg/cYRRdWQGEb</code></pre>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="cardano-herramientas">&#128736; Herramientas de Desarrollo</h3>
+    <div class="card-grid">
+      <div class="card">
+        <h4>Aiken</h4>
+        <p>Lenguaje funcional para smart contracts en Cardano. Compila a Plutus Core. Dise&#241;ado para seguridad y developer experience. Inspirado en Elm y Rust.</p>
+        <a href="https://aiken-lang.org/" target="_blank" rel="noopener">aiken-lang.org &#8599;</a>
+      </div>
+      <div class="card">
+        <h4>Mesh SDK</h4>
+        <p>SDK TypeScript/JS para construir DApps en Cardano. Wallet connection, transaction building, contract interaction. Integraci&#243;n con Aiken.</p>
+        <a href="https://meshjs.dev/" target="_blank" rel="noopener">meshjs.dev &#8599;</a>
+      </div>
+      <div class="card">
+        <h4>Cardano CLI</h4>
+        <p>Interfaz de l&#237;nea de comandos para operaciones b&#225;sicas: minting, transfer, staking, consulta de UTXOs. Ideal para automatizaci&#243;n y scripts.</p>
+        <a href="https://developers.cardano.org/docs/get-started/cardano-cli/basic-operations/" target="_blank" rel="noopener">Documentaci&#243;n &#8599;</a>
+      </div>
+      <div class="card">
+        <h4>Cardano Node + DbSync</h4>
+        <p>Infraestructura full-node para indexing y query de la blockchain. Los explorers y wallets dependen de esto. Requiere infraestructura propia.</p>
+        <a href="https://docs.cardano.org/learn/understanding-cardano/" target="_blank" rel="noopener">Docs &#8599;</a>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="cardano-scaffolds">&#128193; Scaffolds y Plantillas</h3>
+    <div class="stack">
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(245,158,11,0.15);">&#9889;</div>
+        <div>
+          <h4>Scaffold Cardano &#8212; Aiken Development Toolkit</h4>
+          <p>Framework full-stack inspirado en Scaffold-ETH de Ethereum. Automatiza setup de proyectos Aiken + frontend. Proyecto financiado por Project Catalyst.</p>
+          <a href="https://projectcatalyst.io/funds/14/cardano-open-developers/scaffold-cardano-aiken-development-toolkit" target="_blank" rel="noopener">Project Catalyst &#8599;</a>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(59,130,246,0.15);">&#128276;</div>
+        <div>
+          <h4>Mesh + Aiken Next.js Template</h4>
+          <p>Plantilla starter que combina Aiken smart contracts con frontend Next.js via Mesh SDK. Tutorial hello-world end-to-end incluido.</p>
+          <a href="https://github.com/MeshJS/aiken-next-ts-template" target="_blank" rel="noopener">github.com/MeshJS/aiken-next-ts-template &#8599;</a>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(16,185,129,0.15);">&#127760;</div>
+        <div>
+          <h4>Plutarch + Mesh</h4>
+          <p>Stack avanzado: Plutarch (escritura de Plutus en Haskell) + Mesh para el frontend. Para proyectos que requieren control granular del script validator.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- MIDNIGHT -->
+<section id="midnight">
+  <div class="container">
+    <div class="section-label">Secci&#243;n 03</div>
+    <h2>Tokenizaci&#243;n en Midnight</h2>
+    <p><strong>Midnight Network</strong> es una sidechain de Cardano desarrollada por Input Output, dise&#241;ada para bring <em>rational privacy</em> mediante zero-knowledge proofs. Su modelo dual de tokens (<strong>NIGHT</strong> + <strong>DUST</strong>) y el lenguaje <strong>Compact</strong> ofrecen un enfoque diferenciado para aplicaciones que requieren privacidad de datos sensibles en tokenizaci&#243;n.</p>
+
+    <div class="callout midnight">
+      <p>Midnight resuelve la paradoja de la transparencia: permite que aplicaciones mantengan datos sensibles privados mientras prueban cumplimiento y confiabilidad. Ideal para tokenizaci&#243;n de activos que requieren privacidad (datos financieros personales, identidad verificable, etc.).</p>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="midnight-cierres">&#128302; Modelo Dual: NIGHT y DUST</h3>
+
+    <div class="grid-2" style="margin:24px 0;">
+      <div class="card" style="border-left:3px solid var(--accent-cardano);">
+        <span class="pill blue">P&#250;blico</span>
+        <h3 style="margin-top:10px;">NIGHT Token</h3>
+        <table style="margin-top:12px;">
+          <tbody>
+            <tr><td style="border:none;padding:4px 0;color:var(--text3);font-size:0.85rem;">Tipo</td><td style="border:none;padding:4px 0;">P&#250;blico, visible en red</td></tr>
+            <tr><td style="border:none;padding:4px 0;color:var(--text3);font-size:0.85rem;">Purpose</td><td style="border:none;padding:4px 0;">Staking, gobernanza, seguridad</td></tr>
+            <tr><td style="border:none;padding:4px 0;color:var(--text3);font-size:0.85rem;">Supply</td><td style="border:none;padding:4px 0;">Fijo en 24 mil millones</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="card" style="border-left:3px solid var(--accent-midnight);">
+        <span class="pill purple">Privado</span>
+        <h3 style="margin-top:10px;">DUST Token</h3>
+        <table style="margin-top:12px;">
+          <tbody>
+            <tr><td style="border:none;padding:4px 0;color:var(--text3);font-size:0.85rem;">Tipo</td><td style="border:none;padding:4px 0;">Privado, no-transferible</td></tr>
+            <tr><td style="border:none;padding:4px 0;color:var(--text3);font-size:0.85rem;">Purpose</td><td style="border:none;padding:4px 0;">Gastos de transacci&#243;n y ejecuci&#243;n de contratos</td></tr>
+            <tr><td style="border:none;padding:4px 0;color:var(--text3);font-size:0.85rem;">Creation</td><td style="border:none;padding:4px 0;">Generado autom&#225;ticamente al holdear NIGHT</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="callout midnight">
+      <p><strong>Battery Model:</strong> DUST se crea al holdear NIGHT &#8212; los costos de transacci&#243;n se vuelven predecibles porque no dependen de gas fees variables como en otras blockchains. <em>"Developers don't need deep knowledge of cryptography"</em> &#8212; Midnight Docs</p>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="midnight-stack">&#9881; Stack de Desarrollo</h3>
+    <div class="stack">
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(124,58,237,0.15);">&#128221;</div>
+        <div>
+          <h4>Compact &#8212; Lenguaje de Smart Contracts</h4>
+          <p>Lenguaje similar a TypeScript para escribir zero-knowledge circuits. Sintaxis accesible: <code>pragma language_version >= 0.23</code>. Exporta ledger state y circuit functions. Privacy by default &#8212; los par&#225;metros de circuitos son privados.</p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(59,130,246,0.15);">&#129513;</div>
+        <div>
+          <h4>midnight.js &#8212; SDK TypeScript</h4>
+          <p>SDK completo para interacci&#243;n con contratos, gesti&#243;n de wallets y construcci&#243;n de DApps. Conecta con Lace Wallet y el testnet.</p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(16,185,129,0.15);">&#128272;</div>
+        <div>
+          <h4>Local Proof Server</h4>
+          <p>El proof server corre en la m&#225;quina del usuario y genera zero-knowledge proofs locally. <strong>Private data nunca sale del dispositivo del usuario.</strong></p>
+        </div>
+      </div>
+      <div class="stack-item">
+        <div class="stack-icon" style="background:rgba(245,158,11,0.15);">&#128659;</div>
+        <div>
+          <h4>OpenZeppelin Compact Libraries</h4>
+          <p>Bibliotecas testeadas y seguras para smart contracts Compact. Tokens, NFTs, sistemas de identidad y aplicaciones enterprise. Soportadas para uso en producci&#243;n.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="code-block" style="margin-top:24px;">
+      <div class="label">Ejemplo &#8212; Smart Contract Compact</div>
+      <pre><code>// contracts/hello-world.compact
+pragma language_version >= 0.23;
+
+export ledger message: Opaque&lt;"string"&gt;;
+
+export circuit storeMessage(newMessage: Opaque&lt;"string"&gt;): [] {
+  message = disclose(newMessage);
+}</code></pre>
+    </div>
+
+    <hr class="divider" />
+
+    <h3 id="midnight-scaffolds">&#128640; Scaffolds, CLI y Herramientas</h3>
+    <div class="card-grid">
+      <div class="card">
+        <span class="pill purple">CLI</span>
+        <h4 style="margin-top:10px;">Midnight CLI</h4>
+        <p>Instalaci&#243;n del toolchain completo: compilador Compact, Docker para local network, configuraci&#243;n de wallet.</p>
+        <a href="https://docs.midnight.network/getting-started/installation" target="_blank" rel="noopener">docs.midnight.network &#8599;</a>
+      </div>
+      <div class="card">
+        <span class="pill purple">Scaffold</span>
+        <h4 style="margin-top:10px;">create-midnight-app</h4>
+        <p>Paquete npm que automatiza todo el setup inicial: creaci&#243;n de wallet, requests al faucet, checks de balance, configuraci&#243;n de API. Reduce setup de +30 min a pocos minutos.</p>
+        <a href="https://www.npmjs.com/package/create-midnight-app" target="_blank" rel="noopener">npmjs.com &#8599;</a>
+        &nbsp;<a href="https://github.com/kaleababayneh/scaffold-midnight" target="_blank" rel="noopener">GitHub &#8599;</a>
+      </div>
+      <div class="card">
+        <span class="pill purple">Starter</span>
+        <h4 style="margin-top:10px;">example-hello-world</h4>
+        <p>Repositorio starter oficial de Midnight para escribir tu primer contrato Compact, desplegarlo al testnet local y escribir un mensaje en la blockchain.</p>
+        <a href="https://github.com/midnightntwrk/example-hello-world" target="_blank" rel="noopener">GitHub &#8599;</a>
+      </div>
+      <div class="card">
+        <span class="pill green">Faucet</span>
+        <h4 style="margin-top:10px;">Test Tokens (tNIGHT)</h4>
+        <p>Faucet para obtener tNIGHT de testing. Requiere delegar para generar tDUST y pagar transacciones.</p>
+        <a href="https://faucet.preprod.midnight.network/" target="_blank" rel="noopener">faucet.preprod.midnight.network &#8599;</a>
+      </div>
+    </div>
+
+    <div class="callout midnight">
+      <p><strong>Repositorios open-source:</strong> <a href="https://github.com/midnightntwrk/midnight-awesome-dapps" target="_blank" rel="noopener">awesome-dapps</a> &middot; <a href="https://github.com/midnightntwrk/midnight-js" target="_blank" rel="noopener">midnight.js</a> &middot; <a href="https://github.com/midnightntwrk/midnight-zk" target="_blank" rel="noopener">midnight-zk</a> &middot; <a href="https://github.com/midnightntwrk/midnight-indexer" target="_blank" rel="noopener">indexer</a> &middot; <a href="https://github.com/midnightntwrk/midnight-node-docker" target="_blank" rel="noopener">node-docker</a></p>
+    </div>
+
+    <hr class="divider" />
+
+    <h3>&#129513; Gu&#237;a R&#225;pida: Primeros Pasos en Midnight</h3>
+    <div class="timeline">
+      <div class="timeline-item">
+        <h4>1. Instalar toolchain</h4>
+        <p>Seguir la <a href="https://docs.midnight.network/getting-started/installation" target="_blank" rel="noopener">gu&#237;a de instalaci&#243;n</a>: Node.js v22+, Docker, Compact compiler.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>2. Configurar wallet</h4>
+        <p>Usar <strong>Lace Wallet</strong> y switchear a Midnight Preview Network. Obtener tDUST del faucet.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>3. Escribir contrato</h4>
+        <p>Crear archivo <code>.compact</code> en la carpeta <code>contracts/</code>. Usar sintaxis Compact (similar a TypeScript).</p>
+      </div>
+      <div class="timeline-item">
+        <h4>4. Compilar</h4>
+        <p><code>compact compile hello-world.compact managed/hello-world.compact</code> &#8212; genera circuitos ZK, keys y APIs TypeScript.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>5. Testear localmente</h4>
+        <p><code>yarn env:up</code> para proof server, luego <code>yarn test:local</code> contra devnet local con 3 carteras pre-fundadas.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>6. Desplegar a testnet</h4>
+        <p>Desplegar a Preview testnet. Verificar en explorers. Later migrar a mainnet (K&#363;kolu, 2026).</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- COMPARATIVA -->
+<section id="comparativa">
+  <div class="container">
+    <div class="section-label">Secci&#243;n 04</div>
+    <h2>Comparativa: Cardano vs Midnight para Tokenizaci&#243;n</h2>
+    <p>Ambos protocolos son partner chains, pero tienen enfoques distintos. La elecci&#243;n depende del caso de uso.</p>
+
+    <div class="table-wrap" style="margin:32px 0;">
+      <table>
+        <thead>
+          <tr><th>Caracter&#237;stica</th><th style="background:rgba(0,51,173,0.15);">&#9883; Cardano</th><th style="background:rgba(124,58,237,0.15);">&#127769; Midnight</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Enfoque</strong></td><td>Open transparency</td><td>Rational privacy (ZK proofs)</td></tr>
+          <tr><td><strong>Smart Contract</strong></td><td>Aiken / Plutus Core</td><td>Compact (TypeScript-like)</td></tr>
+          <tr><td><strong>Privacidad</strong></td><td>Limitada &#8212; metadata on-chain</td><td>ZK proofs &#8212; private data stays local</td></tr>
+          <tr><td><strong>Tokens</strong></td><td>Native multi-asset + CIP-0113</td><td>NIGHT (public) + DUST (private)</td></tr>
+          <tr><td><strong>RWAs / Securities</strong></td><td>&#10004; CIP-0113 + Aiken</td><td>&#10004; Para datos sensibles / KYC</td></tr>
+          <tr><td><strong>Gas / Fees</strong></td><td>ADA (variable, market-based)</td><td>DUST (predictable &#8212; battery model)</td></tr>
+          <tr><td><strong>Madurez</strong></td><td>Mainnet desde 2017</td><td>Mainnet K&#363;kolu 2026</td></tr>
+          <tr><td><strong>Estandarizaci&#243;n</strong></td><td>CIPs maduros (25, 68, 0113)</td><td>En desarrollo activo</td></tr>
+          <tr><td><strong>Scaffold principal</strong></td><td>Scaffold Cardano + Mesh</td><td>create-midnight-app</td></tr>
+          <tr><td><strong>Regulaci&#243;n AR</strong></td><td>Compatible con CNV</td><td>Potencial para compliance privado</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="grid-2">
+      <div class="callout cardano">
+        <p><strong>&#8594; Usar Cardano</strong> cuando: se necesita m&#225;ximo ecosistema, compatibilidad con explorers/wallets existentes, CIP-0113 para securities regulados, o productos de largo track record.</p>
+      </div>
+      <div class="callout midnight">
+        <p><strong>&#8594; Usar Midnight</strong> cuando: se trabaja con datos sensibles que deben mantenerse privados (KYC, salud, finanzas personales), se requiere compliance verificable sin exposici&#243;n de datos, o se prioriza privacy-by-default.</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- HERRAMIENTAS -->
+<section id="herramientas">
+  <div class="container">
+    <div class="section-label">Secci&#243;n 05</div>
+    <h2>Herramientas y Recursos</h2>
+
+    <div class="grid-2">
+      <div>
+        <h3>Cardano</h3>
+        <div class="stack">
+          <div class="stack-item">
+            <div class="stack-icon">&#128230;</div>
+            <div><h4>Aiken</h4><p>aiken-lang.org &#8212; Lenguaje + toolkit para smart contracts Plutus</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#128440;</div>
+            <div><h4>Mesh SDK</h4><p>meshjs.dev &#8212; SDK TypeScript para DApps Cardano</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#9889;</div>
+            <div><h4>Scaffold Cardano</h4><p>Project Catalyst Fund 14 &#8212; Full-stack framework</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#128196;</div>
+            <div><h4>CIP-0113 Repository</h4><p>github.com/cardano-foundation/cip113-programmable-tokens</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#129514;</div>
+            <div><h4>Preview Environment</h4><p>preview.programmabletokens.xyz &#8212; Demo live de CIP-0113</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#128736;</div>
+            <div><h4>Mesh + Aiken Template</h4><p>github.com/MeshJS/aiken-next-ts-template</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h3>Midnight</h3>
+        <div class="stack">
+          <div class="stack-item">
+            <div class="stack-icon">&#128218;</div>
+            <div><h4>Developer Hub</h4><p>docs.midnight.network &#8212; Docs oficiales completas</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#127891;</div>
+            <div><h4>Midnight Academy</h4><p>academy.midnight.network &#8212; Curriculum para builders</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#9889;</div>
+            <div><h4>create-midnight-app</h4><p>npmjs.com/package/create-midnight-app &#8212; Scaffold automatizado</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#129513;</div>
+            <div><h4>example-hello-world</h4><p>github.com/midnightntwrk/example-hello-world &#8212; Starter oficial</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#128167;</div>
+            <div><h4>Faucet</h4><p>faucet.preprod.midnight.network &#8212; Test tokens</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#127942;</div>
+            <div><h4>Hackathons</h4><p>midnight.network/hackathon &#8212; Eventos activos con premios</p></div>
+          </div>
+          <div class="stack-item">
+            <div class="stack-icon">&#128101;</div>
+            <div><h4>Midnight Aliit</h4><p>midnight.network/aliit &#8212; Fellowship t&#233;cnico</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:32px;">
+      <h3>Marco Legal Argentino</h3>
+      <div class="stack">
+        <div class="stack-item">
+          <div class="stack-icon">&#127963;</div>
+          <div><h4>Argentina.gob.ar &#8212; Nuevo R&#233;gimen de Tokenizaci&#243;n</h4><p>argentina.gob.ar/noticias/nuevo-regimen-de-tokenizacion</p></div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-icon">&#9878;</div>
+          <div><h4>RG 1069/2025 &#8212; Texto Completo</h4><p>boletinoficial.gob.ar/detalleAviso/primera/326947/20250613</p></div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-icon">&#128220;</div>
+          <div><h4>RG 1081/2025 &#8212; Ampliaci&#243;n</h4><p>boletinoficial.gob.ar/detalleAviso/primera/330173/20250821</p></div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-icon">&#128179;</div>
+          <div><h4>EY Argentina &#8212; An&#225;lisis RG 1069</h4><p>ey.com/es_ar/technical/law/.../rg-cnv-1069-2025-tokenizacion-valores-negociables</p></div>
+        </div>
+        <div class="stack-item">
+          <div class="stack-icon">&#128193;</div>
+          <div><h4>Marval &#8212; An&#225;lisis RG 1081</h4><p>marval.com/Publicacion/se-amplia-el-regimen-de-tokenizacion-de-valores-negociables-17296</p></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section id="roadmap">
+  <div class="container">
+    <div class="section-label">Secci&#243;n 06</div>
+    <h2>Roadmap para un Proyecto de Tokenizaci&#243;n en Argentina</h2>
+    <p>Pasos concretos para llevar un proyecto de tokenizaci&#243;n de RWAs al mercado argentino.</p>
+
+    <div class="timeline" style="margin-top:32px;">
+      <div class="timeline-item">
+        <h4>Phase 1 &#8212; Definici&#243;n y Regulaci&#243;n</h4>
+        <p><strong>Semanas 1-4.</strong> Definir el activo a tokenizar (acciones, ONs, cuotapartes, etc.). Consultar con abogado especialista en mercado de capitales. Determinar si aplica a sandbox o r&#233;gimen general. Evaluar estructura societaria (CAV, FCI, trust).</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 2 &#8212; Selecci&#243;n de Blockchain</h4>
+        <p><strong>Semanas 2-4.</strong> Elegir Cardano (para RWAs regulados, CIP-0113) o Midnight (para datos sensibles/KYC). Validar que el protocolo sea compatible con los requisitos regulatorios de la CNV. Proof of concept t&#233;cnica.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 3 &#8212; Desarrollo Smart Contract</h4>
+        <p><strong>Semanas 4-10.</strong> Implementar l&#243;gica de token con Aiken (Cardano) o Compact (Midnight). Definir reglas de mint/burn/transfer compliance. Auditor&#237;a de seguridad del contrato.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 4 &#8212; Frontend y UX</h4>
+        <p><strong>Semanas 8-14.</strong> Construir interfaz de usuario para investors: wallet connection, compra/venta, dashboard. Usar Mesh SDK (Cardano) o midnight.js (Midnight). Implementar KYC/AML flow.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 5 &#8212; Integraci&#243;n con PSAV</h4>
+        <p><strong>Semanas 10-16.</strong> Seleccionar y contratar un PSAV registrado ante CNV para custodia y comercializaci&#243;n. Integrar API del PSAV para gesti&#243;n de inversores y liquidaci&#243;n.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 6 &#8212; Autorizaci&#243;n CNV</h4>
+        <p><strong>Semanas 12-20.</strong> Presentar solicitud simult&#225;nea de oferta p&#250;blica y representaci&#243;n digital ante la CNV. Preparar documentaci&#243;n: t&#233;rminos y condiciones, prospecto, informe de auditor&#237;a.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 7 &#8212; Emisi&#243;n y Listado</h4>
+        <p><strong>Semanas 18-24.</strong> Una vez aprobada la autorizaci&#243;n, ejecutar emisi&#243;n on-chain. Listar en plataforma del PSAV. Configurar indexer/explorer para que investors puedan verificar sus tenencias.</p>
+      </div>
+      <div class="timeline-item">
+        <h4>Phase 8 &#8212; Operaciones y Cumplimiento</h4>
+        <p><strong>Ongoing.</strong> Reportes peri&#243;dicos a la CNV. Mantenimiento de smart contract. Gesti&#243;n de eventos corporativos (dividendos, rescates). Cumplimiento continuo de AML/KYC.</p>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:32px;">
+      <p><strong>&#9888; Disclaimer:</strong> Este roadmap es informativo y no constituye asesoramiento legal. Para cualquier proyecto de tokenizaci&#243;n en Argentina es indispensable contar con asesor&#237;a de un estudio jur&#237;dico especializado en mercado de capitales y regulaci&#243;n CNV.</p>
+    </div>
+
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>Investigaci&#243;n y compilación: Hermes Agent &middot; Datos verificables a mayo 2026</p>
+    <p style="margin-top:8px;">Marco legal: <a href="https://www.argentina.gob.ar/noticias/nuevo-regimen-de-tokenizacion" target="_blank" rel="noopener">CNV Argentina</a> &middot; Cardano: <a href="https://cardanofoundation.org/blog/programmable-tokens-cardano" target="_blank" rel="noopener">Cardano Foundation</a> &middot; Midnight: <a href="https://docs.midnight.network/" target="_blank" rel="noopener">Midnight Docs</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
